@@ -2,7 +2,7 @@ import urllib2
 import re, json, hou, os
 import webbrowser
 
-check_version_url =  'https://raw.githubusercontent.com/paulwinex/pw_Houdini_VEX_Editor/master/vexeditorinfo.json'
+check_version_url =  'https://raw.githubusercontent.com/paulwinex/pw_Houdini_VEX_Editor/master/pw_VEX_Editor/vexeditorinfo.json'
 
 def str_to_list(str):
     v = re.findall(r'[\d.]+', str)

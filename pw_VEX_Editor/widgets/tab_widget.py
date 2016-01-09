@@ -272,8 +272,9 @@ class VEXEditorTabWidget(QTabWidget):
 
     def focus_me(self):
         cur = self.current()
-        cur.edit.setFocus()
-        cur.edit.activateWindow()
+        if cur:
+            cur.edit.setFocus()
+            cur.edit.activateWindow()
 
     def save_tabs_to_hip(self):
         # collect data
