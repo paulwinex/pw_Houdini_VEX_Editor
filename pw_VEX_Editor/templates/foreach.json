@@ -1,0 +1,5 @@
+{
+    "text": "foreach (x; $cursor$) {\n    \n    }", 
+    "keyword": "fore", 
+    "name": "Foreach"
+}

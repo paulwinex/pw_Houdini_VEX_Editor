@@ -1,0 +1,32 @@
+{
+    "houdini_theme": "Houdini Light",
+    "name": "Light",
+    "code": {
+        "comment": [205,206,206],
+        "digits": [184,99,53],
+        "string": [128,211,186],
+        "directive": [223,50,73],
+        "default": [127,119,125],
+        "attribute": [108,123,186],
+        "includes": [202,126,123],
+        "keywords": [138,170,34],
+        "background": [245,242,234],
+        "type": [221,175,86],
+        "operator": [164,167,153],
+        "brace": [124,137,149],
+        "variable": [69,72,222],
+        "methods": [122,173,195],
+        "whitespace": [200,200,200]
+    },
+    "completer": {
+        "background_selected": [228,165,42],
+        "methods": [88,149,166],
+        "directive": [181,75,88],
+        "default": [103,103,103],
+        "attribute": [75,91,163],
+        "background": [219,217,211],
+        "keywords": [117,151,15],
+        "variable": [69,72,222],
+        "type": [161,134,7]
+    }
+}

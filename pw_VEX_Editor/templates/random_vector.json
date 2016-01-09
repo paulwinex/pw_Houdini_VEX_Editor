@@ -1,0 +1,5 @@
+{
+    "text": "float seed = ch('seed');\nvector vector_rand(float pos; float seed){\n    vector v = set(rand(pos + seed),\n                   rand(pos + seed + 123), \n                   rand(pos + seed - 123));\n    return v;\n    }\n$cursor$", 
+    "keyword": "rnv", 
+    "name": "Random Vector"
+}

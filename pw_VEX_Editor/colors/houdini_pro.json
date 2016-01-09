@@ -1,0 +1,32 @@
+{
+    "houdini_theme": "Houdini Pro",
+    "name": "Pro",
+    "code": {
+        "comment": [147,147,147],
+        "digits": [180,81,28],
+        "string": [51,137,118],
+        "directive": [163,39,55],
+        "default": [102,92,100],
+        "attribute": [86,111,163],
+        "includes": [161,97,94],
+        "keywords": [37,83,135],
+        "background": [179,179,179],
+        "type": [152,78,165],
+        "operator": [107,107,107],
+        "brace": [102,114,124],
+        "variable": [52,56,199],
+        "methods": [76,144,169],
+        "whitespace": [200,200,200]
+    },
+    "completer": {
+        "background_selected": [196,142,38],
+        "methods": [57,129,155],
+        "directive": [151,43,56],
+        "default": [85,85,85],
+        "attribute": [57,70,132],
+        "background": [197,197,197],
+        "keywords": [24,65,112],
+        "variable": [48,51,214],
+        "type": [140,48,157]
+    }
+}

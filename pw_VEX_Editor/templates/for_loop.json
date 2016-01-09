@@ -1,0 +1,5 @@
+{
+    "text": "for(int i=0; i<$cursor$; i++){\n        \n    }", 
+    "keyword": "for", 
+    "name": "For Loop"
+}

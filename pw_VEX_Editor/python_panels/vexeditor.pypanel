@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pythonPanelDocument>
+  <!-- This file contains definitions of Python interfaces and the
+ interfaces menu.  It should not be hand-edited when it is being
+ used by the application.  Note, that two definitions of the
+ same interface or of the interfaces menu are not allowed
+ in a single file. -->
+  <interface name="VEXEditorPanelClass" label="VEX Editor" icon="MISC_python" help_url="">
+    <script><![CDATA[# VEX Editor for Houdini.
+# by PaulWinex. www.paulwinex.ru
+# python_panel for Houdini 14/15
+# requirements: hqt module
+
+def createInterface():
+    from pw_VEX_Editor import editor_panel
+    reload(editor_panel)
+    w = editor_panel.VEXEditorPanelClass()
+    w.setStyleSheet('')
+    import hqt
+    w.setStyleSheet( hqt.get_h14_style() )
+    return w
+]]></script>
+    <help><![CDATA[]]></help>
+  </interface>
+</pythonPanelDocument>

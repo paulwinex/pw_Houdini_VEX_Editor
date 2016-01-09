@@ -1,0 +1,32 @@
+{
+    "houdini_theme": "Houdini Dark", 
+    "name": "Dark",
+    "code": {
+        "comment": [62,66,68],
+        "digits": [200,186,84],
+        "string": [231,155,8],
+        "directive": [105,85,99],
+        "default": [169,183,185],
+        "attribute": [108,148,14],
+        "includes": [118,118,146],
+        "keywords": [86,204,105],
+        "background": [37, 37,37],
+        "type": [141,82,131],
+        "operator": [190,185,128],
+        "brace": [171,169,144],
+        "methods": [81,139,179],
+        "variable": [206,184,0],
+        "whitespace": [55,55,55]
+    }, 
+    "completer": {
+        "background_selected": [143,105,33],
+        "methods": [102,181,236],
+        "directive": [161,132,153],
+        "default": [194,194,194],
+        "attribute": [126,166,80],
+        "background": [55,59,58],
+        "keywords": [104,207,121],
+        "type": [173,96,161],
+        "variable": [206,184,0]
+    }
+}

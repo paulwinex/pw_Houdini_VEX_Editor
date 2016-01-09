@@ -1,0 +1,5 @@
+{
+    "text": "printf(\"%s\\n\", $cursor$);", 
+    "keyword": "pr", 
+    "name": "Print"
+}

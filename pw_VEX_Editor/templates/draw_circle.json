@@ -1,0 +1,5 @@
+{
+    "text": "float segs = chi('count');\nfloat radius = ch('radius');\n\nfor(int i=0; i<segs; i++){\n    float deg = (360.0/segs)*i;\n    float coord_x = sin(radians(deg)) * radius;\n    float coord_y = cos(radians(deg)) * radius;\n    addpoint(geoself(), set(coord_x, coord_y, 0));\n}", 
+    "keyword": "", 
+    "name": "Draw circle"
+}
