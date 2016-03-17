@@ -1,6 +1,6 @@
-# Houdini VEX Editor v1.0.6
+# Houdini VEX Editor v1.0.7
 
-![alt tag](http://www.paulwinex.ru/wp-content/uploads/2015/10/vex-splash1.0.5.jpg)
+![alt tag](http://www.paulwinex.ru/wp-content/uploads/2016/03/vex-splash_x.x.x.jpg)
 
 #### [paulwinex.ru](http://www.paulwinex.ru/vex_editor_1_0_5/)
 
@@ -59,7 +59,7 @@ and feature requests can be sent to my email: paulwinex@gmail.com.
 >        Unlike the Point SOP, this does not use local variables. Further, all backtick expressions
 >        and $ F variables will be evaluated at frame 1, not the current time. Use Frame, Time, or TimeInc instead.
 
-###    New in v1.0.6
+###    New in v1.0.7
 
 >   You can show or hide tool bar
 
@@ -69,7 +69,7 @@ and feature requests can be sent to my email: paulwinex@gmail.com.
 
 >   Added "Open settings folder" action in Editor menu
 
-## Bugfix
+### Bugfix
 
 >   Renamed settings folder
 
@@ -85,7 +85,7 @@ and feature requests can be sent to my email: paulwinex@gmail.com.
 
 >   Now context help (Shift + F1) worked if cursor not only above function name but also inside arguments
 
-## Bugfix
+### Bugfix
 
 >   Fixed disappearing autocomplite widget in Houdini 15
 
