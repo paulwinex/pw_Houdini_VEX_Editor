@@ -59,7 +59,7 @@ and feature requests can be sent to my email: paulwinex@gmail.com.
 >        Unlike the Point SOP, this does not use local variables. Further, all backtick expressions
 >        and $ F variables will be evaluated at frame 1, not the current time. Use Frame, Time, or TimeInc instead.
 
-###    New in v1.0.7
+###    New in v1.0.6
 
 >   You can show or hide tool bar
 
@@ -85,7 +85,9 @@ and feature requests can be sent to my email: paulwinex@gmail.com.
 
 >   Now context help (Shift + F1) worked if cursor not only above function name but also inside arguments
 
-### Bugfix
+>   Added "Find and Replace" window. Use Ctrl+F to open
+
+### [Bugfix](#bugfix1.0.7)
 
 >   Fixed disappearing autocomplite widget in Houdini 15
 
