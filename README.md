@@ -8,6 +8,8 @@
 
 ## [Demo video](https://vimeo.com/145107371)
 
+## [Install guide](https://vimeo.com/151224709)
+
 I am proud to present the latest tool I made for Houdini. This time an editor for VEX code!
 It is a good alternative to builtin editor in Houdini. During development user feedback and requests have been a decisive factor.
 And yes you can now change font size! This is only one small feature. Following text will present a full list of features
@@ -59,16 +61,36 @@ and feature requests can be sent to my email: paulwinex@gmail.com.
 
 ###    New in v1.0.6
 
->   You can show or hide tool bar in
+>   You can show or hide tool bar
+
 >   Drag and drop node parameter on VEX Editor UI to create new tab connected to this parameter
+
 >   Added "Save as..." action in Tabs menu
+
 >   Added "Open settings folder" action in Editor menu
 
 ## Bugfix
 
 >   Renamed settings folder
+
+>   Skipping creation of parameters if path is external
+
 >   Number bar now have static width
+
 >   Some fixes for linux systems
+
+###    New in v1.0.7
+
+>   Added help window to show quick help for function in cursor focus (Menu -> Editor -> Help Window)
+
+>   Now context help (Shift + F1) worked if cursor not only above function name but also inside arguments
+
+## Bugfix
+
+>   Fixed disappearing autocomplite widget in Houdini 15
+
+>   "Select node" button now open parent network in active network tab
+
 
 # Interface Description
 ![alt tag](http://www.paulwinex.ru/wp-content/uploads/2015/11/interface.png)

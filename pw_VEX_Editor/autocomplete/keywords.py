@@ -1,13 +1,15 @@
 from .. widgets.vexSyntax import keywords
 from PySide.QtCore import QProcess
 from .. import vex_settings
-import os, hou, re, json
+import os, hou, re, json, zipfile
 
 # save functions in memory
 global functions
 functions = None
 global attributes
 attributes = None
+global functions_help
+functions_help = None
 
 def get_functions():
     global functions
@@ -33,7 +35,23 @@ def get_attributes():
     else:
         return attribs
 
-def generate_completes(force=False):
+def get_functions_help_window(func_name):
+    global functions_help
+    if not functions_help:
+        cache_file = vex_settings.get_autocomplete_cache_file()
+        if os.path.exists(cache_file):
+            comp = json.load(open(cache_file))
+            functions_help = comp['functions']
+
+    if func_name in functions_help:
+        res = r'<br>'.join([r'<u><b>%s</b></u>' % functions_help[func_name].get('hlp','')]+[ x for x in functions_help[func_name]['args']])
+        # res = '\n'.join(['%s' % functions_help[func_name].get('hlp','')]+[ x for x in functions_help[func_name]['args']])
+        if res:
+            return res
+        else:
+            return func_name+'()'
+
+def generate_completes2(force=False):
     # check parsed functions
     cache_file = vex_settings.get_autocomplete_cache_file()
     if os.path.exists(cache_file) and not force:
@@ -82,6 +100,88 @@ def generate_completes(force=False):
     comp['attributes'] = attrs
     json.dump(comp, open(cache_file, 'w'))
     return True
+
+def generate_completes(force=False):
+    # check parsed functions
+    cache_file = vex_settings.get_autocomplete_cache_file()
+    if os.path.exists(cache_file) and not force:
+        return True
+    # get vcc
+    vcc = os.path.join(hou.getenv('HFS'), 'bin', 'vcc').replace('/','\\')
+    if os.name == 'nt':
+        vcc = vcc + '.exe'
+    if not os.path.exists(vcc):
+        return False
+    # generate new
+    funcs = {}
+    attrs = {}
+    process = QProcess()
+    process.start(' '.join([vcc, '-X']))
+    process.waitForFinished()
+    lines =  str(process.readAll()).split('\n')
+    for context in lines:
+        if context:
+            process.start(' '.join([vcc, '-X', context]))
+            process.waitForFinished()
+            context_lines =  str(process.readAll())
+            # variables
+            variables = re.search(r'Global Variables:(.*)Control Statements:', context_lines, re.DOTALL)
+            if variables:
+                lines = variables.group(1).strip().split('\n')
+                for l in lines:
+                    s = l.split()
+                    if len(s)==3:
+                        attrs[s[-1]] = s[-2]
+            # functions
+            pat = r'^\s*(\w+\[?\]?)\s(\w+)(\(.+\))'
+            for l in context_lines.split('\n'):
+                func = re.findall(pat, str(l))
+                if func:
+                    f_name = func[0][1]
+                    f_args = func[0][2]
+                    if f_name in funcs:
+                        if not f_args in funcs[f_name].get('args', []):
+                            funcs[f_name]['args'].append(f_args)
+                    else:
+                        funcs[f_name] = {'args':  [f_args]}
+    # parse help if Houdini 15
+    if hou.applicationVersion()[0] >= 15:
+        funcs = parse_help(funcs)
+    # save to cache
+    if os.path.exists(cache_file):
+        comp = json.load(open(cache_file))
+    else:
+        comp = {}
+    comp['functions'] = funcs
+    comp['attributes'] = attrs
+    json.dump(comp, open(cache_file, 'w'))
+    return True
+
+def parse_help(source):
+    vexzip = os.path.join(os.getenv('HFS'), 'houdini/help/vex.zip').replace('\\','/')
+    if not os.path.exists(vexzip):
+        return source
+    try:
+        zf = zipfile.ZipFile(vexzip, 'r')
+    except:
+        return source
+    funcs = {}
+    for f in zf.namelist():
+        if f.startswith('functions'):
+            func = os.path.splitext(os.path.basename(f))[0]
+            if not func in source: continue
+            if func[0] == '_':continue
+            text = zf.read(f)
+            args = re.findall(r"`(\w+\s%s.*)`" % func, text)
+            hlp = re.findall(r'"""(.*)"""', text, re.DOTALL)
+            data = {}
+            if args:
+                data['args'] = [x.replace(' ,', ',') for x in args]
+            if hlp:
+                data['hlp'] = hlp[0].replace('\n', ' ')
+            if data:
+                source[func] = data
+    return source
 
 ##############################################################################
 ##########  DEFAULT LISTS ####################################################

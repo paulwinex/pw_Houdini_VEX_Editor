@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 from PySide.QtCore import *
 from PySide.QtGui import *
 import re
@@ -6,10 +7,10 @@ reload(design)
 import keywords
 reload(keywords)
 
-class VEXHighlighterClass (QSyntaxHighlighter):
-    def __init__(self, document, colors=None, extraSyntax=None):
+class VEXHighlighterClass(QSyntaxHighlighter):
+    def __init__(self, document, colors=None, extraSyntax=None, skip_lines=False):
         QSyntaxHighlighter.__init__(self, document)
-
+        self.skip = skip_lines
         if colors:
             self.colors = colors
         else:
@@ -29,11 +30,7 @@ class VEXHighlighterClass (QSyntaxHighlighter):
         # rules += [(r"(#\w+\s|!?defined)\s?([\w\(\)]+)", 2, self.getStyle(self.colors['code']['includes']))]
         # rules += [(r'''(#if\s+|#)!?\w+\s(.+)\s''', 2, self.getStyle(self.colors['code']['includes']))]
 
-        # types
-        rules += [("\\b%s\\b" % b, 0, self.getStyle(self.colors['code']['type']))
-            for b in keywords.syntax['types']]
-
-        #Braces
+        # Braces
         rules += [(r'[\{\}\(\)\[\]]', 0, self.getStyle(self.colors['code']['brace']))]
 
         # Digits
@@ -57,6 +54,10 @@ class VEXHighlighterClass (QSyntaxHighlighter):
 
         # Methods
         rules += [("\\b[A-Za-z0-9_]+\s*(?=\\()", 0, self.getStyle(self.colors['code']['methods'], True))]
+
+        # types
+        rules += [("\\b%s\\b" % b, 0, self.getStyle(self.colors['code']['type']))
+            for b in keywords.syntax['types']]
 
         # Keywords
         rules += [(r'(^|[^#])\b(%s)\b' % w, 2, self.getStyle(self.colors['code']['keywords'], True))
@@ -99,18 +100,23 @@ class VEXHighlighterClass (QSyntaxHighlighter):
         """
         defFormat = self.getStyle(self.colors['code']['default'])
         self.setFormat(0, len(text), defFormat)
+        ofs = 0
+        if self.skip:
+            s = unicode(text.strip().encode(errors='replace'))#.replace('?', '\n')
+            split = s.split('?', self.skip)
+            ofs = len(''.join(split[:self.skip]))
 
-        # Do other syntax formatting
         for expression, nth, format in self.rules:
-            index = expression.indexIn(text, 0)
-            # print expression, index
+            index = expression.indexIn(text, 0) + ofs
             while index >= 0:
-                # We actually want the index of the nth match
                 index = expression.pos(nth)
                 length = len(expression.cap(nth))
-                self.setFormat(index, length, format)
-                index = expression.indexIn(text, index + length)
-
+                if self.skip:
+                    if index > ofs:
+                        self.setFormat(index, length, format)
+                else:
+                    self.setFormat(index, length, format)
+                index = expression.indexIn(text, index + length)# + ofs
 
         strings = re.findall(r'(".*?")|(\'.*?\')', text)
         if '//' in text:

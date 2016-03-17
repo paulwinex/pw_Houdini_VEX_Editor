@@ -4,11 +4,12 @@ import json, os, glob, webbrowser
 import hou, hqt
 from widgets import editor_window_UIs
 reload(editor_window_UIs)
-from widgets import tab_widget, select_parm_dialog, completer_widget, error_browser
+from widgets import tab_widget, select_parm_dialog, completer_widget, error_browser, help_window
 reload(tab_widget)
 reload(completer_widget)
 reload(select_parm_dialog)
 reload(error_browser)
+reload(help_window)
 from widgets.vexSyntax import design
 reload(design)
 import houdini_nodes
@@ -39,18 +40,24 @@ class VEXEditorPanelClass(QMainWindow, editor_window_UIs.Ui_editor_window):
         self.settings = vex_settings.EditorSettingsClass()
         self.theme = ''
         self.theme_colors = {}
+        self.use_help_window = False
         self.load_settings()
         self.hstyle = hqt.get_h14_style(self.theme)
         # build ui
         self.errors = error_browser.ErrorBrowserWidget()
         self.error_browser_ly.addWidget(self.errors)
         self.errors.hide()
+
+        self.help_wd = help_window.HelpWindow(self)
+        self.help_ly.addWidget(self.help_wd)
+        self.help_wd.hide()
+
         self.tab = tab_widget.VEXEditorTabWidget(self)
         self.tab_ly.addWidget(self.tab)
         self.tab.update_infoSignal.connect(self.set_tab_info)
         self.tab.messageSignal.connect(self.show_status_message)
         self.tab.lastClosedSignal.connect(self.last_tab_closed)
-
+        self.tab.currentChanged.connect(self.update_help_window)
         #icons
         for btn in self.load_from_file_btn, self.load_from_selected_extra_btn, self.save_current_btn, self.reload_current_btn,\
                 self.blank_tab_btn, self.load_from_selected_btn:
@@ -97,7 +104,7 @@ class VEXEditorPanelClass(QMainWindow, editor_window_UIs.Ui_editor_window):
         self.load_tabs_from_hip_act.triggered.connect(self.tab.restore_tabs_from_hip)
         self.clear_tabs_act.triggered.connect(self.tab.clear_tabs_node)
         self.check_new_version_act.triggered.connect(check_version.check_version)
-        for act in self.auto_create_parms_act, self.save_tabs_in_hip_act, self.use_hou_browser_act:
+        for act in self.auto_create_parms_act, self.save_tabs_in_hip_act, self.use_hou_browser_act, self.help_window_act:
             act.triggered.connect(self.save_settings)
         # self.set_font_size_act.triggered.connect(self.set_font_size)
         self.live_template_editor_act.triggered.connect(self.open_live_template_editor)
@@ -107,6 +114,7 @@ class VEXEditorPanelClass(QMainWindow, editor_window_UIs.Ui_editor_window):
         self.clear_backups_act.triggered.connect(self.clear_backup)
         self.open_theme_editor_act.triggered.connect(self.open_theme_editor)
         self.open_settings_folder_act.triggered.connect(self.open_settings_folder)
+        self.find_replace_act.triggered.connect(self.tab.update_replace_dialog)
 
         # default visibility
         self.file_info_wd.setVisible(0)
@@ -131,16 +139,22 @@ class VEXEditorPanelClass(QMainWindow, editor_window_UIs.Ui_editor_window):
         if self.settings.get_value('auto_save_tabs', vex_settings.default_data['auto_save_tabs']):
             self.tab.save_tabs_to_hip()
         self.tab.timer.stop()
+        if self.tab.find_dial:
+            self.tab.find_dial.deleteLater()
+            # self.tab.find_dial.close()
         QMainWindow.closeEvent(self, event)
 
     def load_settings(self):
         data = self.settings.get_settings()
         self.theme = data.get('theme', self.theme or vex_settings.default_data['theme'])
         self.toolbar_wd.setVisible(data.get('show_toolbar', True))
+        self.use_help_window = data.get('helpwindow', False)
 
     def save_settings(self, *args):
         data = self.settings.get_settings()
         data['theme'] = self.theme
+        if self.help_wd.isVisible() and not data['helpwindow']:
+            self.help_wd.hide()
         # save data
         self.settings.save_settings(data)
 
@@ -349,6 +363,7 @@ class VEXEditorPanelClass(QMainWindow, editor_window_UIs.Ui_editor_window):
         for i in range(self.tab.count()):
             w = self.tab.widget(i).edit
             w.apply_style(theme['name'], theme)
+        self.help_wd.apply_style(theme['name'], theme)
         self.theme = theme['name']
         self.theme_colors = theme
         self.save_settings()
@@ -391,19 +406,25 @@ class VEXEditorPanelClass(QMainWindow, editor_window_UIs.Ui_editor_window):
 
     def clear_backup(self):
         folder = vex_settings.backup_folder()
-        for f in os.listdir(folder):
-            try:
-                os.remove(os.path.join(folder, f))
-            except:
-                pass
+        if os.path.exists(folder):
+            for f in os.listdir(folder):
+                try:
+                    os.remove(os.path.join(folder, f))
+                except:
+                    pass
 
 
     def open_options_dialog(self):
         self.dial = options_dialog.OptionsDialogClass(hqt.houWindow)
         self.dial.setStyleSheet(self.hstyle)
+
         def update_from_settings():
             s = self.settings.get_settings()
             self.toolbar_wd.setVisible(s.get('show_toolbar', True))
+            self.use_help_window = s.get('helpwindow', False)
+            if not self.use_help_window:
+                self.help_wd.hide()
+
         self.dial.optionsChangedSignal.connect(self.tab.update_from_settings)
         self.dial.optionsChangedSignal.connect(update_from_settings)
         self.dial.exec_()
@@ -430,6 +451,11 @@ class VEXEditorPanelClass(QMainWindow, editor_window_UIs.Ui_editor_window):
         else:
             print os.name
 
+    def update_help_window(self, text):
+        if text and self.use_help_window:
+            self.help_wd.show_help(text)
+        else:
+            self.help_wd.hide()
 
 
     ###########################################################################

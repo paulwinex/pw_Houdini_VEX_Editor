@@ -16,6 +16,7 @@ current_theme = houdini_themes.get(hqt.getCurrentColorTheme(),"Dark")
 
 default_data = dict(
             font_size=20,
+            help_font_size=14,
             font_size_min=8,
             font_size_max=60,
             theme=current_theme,
@@ -30,7 +31,8 @@ default_data = dict(
             use_external_browser=False,
             backup_timeout=3, #min
             max_backup_files=30,
-            autocompleter=True
+            autocompleter=True,
+            helpwindow=True
         )
 
 def get_settings_folder():

@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'D:\Dropbox\Dropbox\pw_pipeline\pw_pipeline\assets\houdini\python\VEX\pw_Houdini_VEX_Editor\pw_VEX_Editor\widgets\editor_window.ui'
 #
-# Created: Thu Dec 03 12:59:15 2015
-#      by: pyside-uic 0.2.15 running on PySide 1.2.2
+# Created: Thu Mar 17 10:44:37 2016
+#      by: pyside-uic 0.2.15 running on PySide 1.2.4
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -12,7 +12,7 @@ from PySide import QtCore, QtGui
 class Ui_editor_window(object):
     def setupUi(self, editor_window):
         editor_window.setObjectName("editor_window")
-        editor_window.resize(1069, 600)
+        editor_window.resize(1221, 587)
         self.centralwidget = QtGui.QWidget(editor_window)
         self.centralwidget.setObjectName("centralwidget")
         self.verticalLayout_2 = QtGui.QVBoxLayout(self.centralwidget)
@@ -114,9 +114,9 @@ class Ui_editor_window(object):
         self.verticalLayout_3 = QtGui.QVBoxLayout(self.scrollAreaWidgetContents_2)
         self.verticalLayout_3.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout_3.setObjectName("verticalLayout_3")
-        self.file_info_lb_ = QtGui.QLabel(self.scrollAreaWidgetContents_2)
-        self.file_info_lb_.setObjectName("file_info_lb_")
-        self.verticalLayout_3.addWidget(self.file_info_lb_)
+        self.file_info_lb = QtGui.QLabel(self.scrollAreaWidgetContents_2)
+        self.file_info_lb.setObjectName("file_info_lb")
+        self.verticalLayout_3.addWidget(self.file_info_lb)
         self.scrollArea.setWidget(self.scrollAreaWidgetContents_2)
         self.verticalLayout.addWidget(self.scrollArea)
         self.horizontalLayout_3.addLayout(self.verticalLayout)
@@ -146,10 +146,13 @@ class Ui_editor_window(object):
         self.error_browser_ly = QtGui.QVBoxLayout()
         self.error_browser_ly.setObjectName("error_browser_ly")
         self.verticalLayout_2.addLayout(self.error_browser_ly)
+        self.help_ly = QtGui.QVBoxLayout()
+        self.help_ly.setObjectName("help_ly")
+        self.verticalLayout_2.addLayout(self.help_ly)
         self.verticalLayout_2.setStretch(1, 1)
         editor_window.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(editor_window)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1069, 21))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1221, 21))
         self.menubar.setObjectName("menubar")
         self.menu_tabs = QtGui.QMenu(self.menubar)
         self.menu_tabs.setObjectName("menu_tabs")
@@ -241,6 +244,11 @@ class Ui_editor_window(object):
         self.save_to_new_act.setObjectName("save_to_new_act")
         self.open_settings_folder_act = QtGui.QAction(editor_window)
         self.open_settings_folder_act.setObjectName("open_settings_folder_act")
+        self.help_window_act = QtGui.QAction(editor_window)
+        self.help_window_act.setCheckable(True)
+        self.help_window_act.setObjectName("help_window_act")
+        self.find_replace_act = QtGui.QAction(editor_window)
+        self.find_replace_act.setObjectName("find_replace_act")
         self.backup_menu_act.addAction(self.clear_backups_act)
         self.backup_menu_act.addAction(self.open_backup_folder_act)
         self.backup_menu_act.addSeparator()
@@ -266,6 +274,7 @@ class Ui_editor_window(object):
         self.menuTheme.addSeparator()
         self.menuEditor.addAction(self.menuTheme.menuAction())
         self.menuEditor.addAction(self.options_act)
+        self.menuEditor.addAction(self.find_replace_act)
         self.menuEditor.addSeparator()
         self.menuEditor.addAction(self.open_settings_folder_act)
         self.menuTemplates.addAction(self.live_template_editor_act)
@@ -295,7 +304,7 @@ class Ui_editor_window(object):
         self.node_info_lb.setText(QtGui.QApplication.translate("editor_window", "<html><head/><body><p>Node: /obj/geo1/nodename<br/>Parm: snippet</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.show_sourse_btn.setText(QtGui.QApplication.translate("editor_window", "Select Node", None, QtGui.QApplication.UnicodeUTF8))
         self.file_info_static_lb.setText(QtGui.QApplication.translate("editor_window", "<html><head/><body><p>File Path:</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
-        self.file_info_lb_.setText(QtGui.QApplication.translate("editor_window", "<html><head/><body><p>path</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
+        self.file_info_lb.setText(QtGui.QApplication.translate("editor_window", "<html><head/><body><p>path</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.show_sourse_btn_2.setText(QtGui.QApplication.translate("editor_window", "Open Folder", None, QtGui.QApplication.UnicodeUTF8))
         self.menu_tabs.setTitle(QtGui.QApplication.translate("editor_window", "Tabs", None, QtGui.QApplication.UnicodeUTF8))
         self.backup_menu_act.setTitle(QtGui.QApplication.translate("editor_window", "Backups", None, QtGui.QApplication.UnicodeUTF8))
@@ -336,4 +345,7 @@ class Ui_editor_window(object):
         self.open_backup_folder_act.setText(QtGui.QApplication.translate("editor_window", "Open folder", None, QtGui.QApplication.UnicodeUTF8))
         self.save_to_new_act.setText(QtGui.QApplication.translate("editor_window", "Save as...", None, QtGui.QApplication.UnicodeUTF8))
         self.open_settings_folder_act.setText(QtGui.QApplication.translate("editor_window", "Open settings folder", None, QtGui.QApplication.UnicodeUTF8))
+        self.help_window_act.setText(QtGui.QApplication.translate("editor_window", "Help Window", None, QtGui.QApplication.UnicodeUTF8))
+        self.find_replace_act.setText(QtGui.QApplication.translate("editor_window", "Find and Replace...", None, QtGui.QApplication.UnicodeUTF8))
+        self.find_replace_act.setShortcut(QtGui.QApplication.translate("editor_window", "Ctrl+F", None, QtGui.QApplication.UnicodeUTF8))
 

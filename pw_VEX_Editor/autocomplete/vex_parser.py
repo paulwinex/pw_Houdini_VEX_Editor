@@ -3,7 +3,7 @@ import keywords
 reload(keywords)
 import waiting_dialog
 reload(waiting_dialog)
-from PySide.QtCore import QTimer
+# from PySide.QtCore import QTimer
 
 
 # generate completes
@@ -134,7 +134,7 @@ class Parser(object):
             if not i:
                 return i, index
             try:
-                c = i.next ()
+                c = i.next()
                 index += 1
             except StopIteration:
                 self.parse_block_content()
@@ -373,6 +373,33 @@ class Parser(object):
                 if sub_b:
                     return sub_b
 
+    @classmethod
+    def parse_help_line(cls, text):
+        if not text:
+            return
+        it = iter(reversed(text))
+        con = pos = i = 0
+        while True:
+            try:
+                c = it.next()
+                i += 1
+            except StopIteration:
+                return
+            if c == '(':
+                if con == 0:
+                    pos = i
+                    break
+                con -= 1
+            elif c == ')':
+                con += 1
+
+        pos = len(text)-pos
+        f = re.findall(r'([\w\d_]+)[\s]*\($', text[:pos+1])
+        if f:
+            func = f[0]
+            return func
+        else:
+            return cls.parse_help_line(text[:pos])
 
 class AttributesParser(object):
     def __init__(self, word, parm):

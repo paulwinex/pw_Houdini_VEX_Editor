@@ -1,12 +1,14 @@
 from PySide.QtCore import *
 from PySide.QtGui import *
-import hqt, hou, datetime, time, os
-from .. autocomplete import keywords
+import hqt, hou, datetime, time, os, re, itertools
+from .. autocomplete import keywords, vex_parser
 reload(keywords)
 import context_help
 reload(context_help)
 import container_widget
 reload(container_widget)
+import find_replace
+reload((find_replace))
 from .. import vex_settings
 tabsNodeName = 'VexEditorTabs'
 
@@ -21,6 +23,7 @@ class VEXEditorTabWidget(QTabWidget):
         self.setMovable(True)
         # variables
         self.par = parent
+        self.find_dial = None
         self.settings = vex_settings.EditorSettingsClass()
         # connect
         self.tabCloseRequested.connect(self.closeTab)
@@ -46,6 +49,7 @@ class VEXEditorTabWidget(QTabWidget):
         con = container_widget.Container('', parent=self)
         con.errorsSignal.connect(self.par.errors.show_error)
         con.noErrorsSignal.connect(self.par.errors.clear)
+        con.helpSignal.connect(self.par.update_help_window)
         self.addTab(con, 'Vex Code')
         self.assign_tab_reference(con, **kwargs)
         self.setCurrentIndex(self.count()-1)
@@ -122,12 +126,20 @@ class VEXEditorTabWidget(QTabWidget):
             if w.file:
                 parm_path = os.path.basename(w.file)
             elif w.parm:
-                parm_path = (w.parm.node().path() + '/' + w.parm.name()).replace('/','_')
+                try:
+                    name = w.parm.name()
+                    parm_path = (w.parm.node().path() + '/' + name).replace('/','_')
+                except:
+                    parm_path = None
             elif w.section:
-                parm_path = (w.section.definition().nodeTypeName()+'_'+w.section.name())
+                try:
+                    parm_path = (w.section.definition().nodeTypeName()+'_'+w.section.name())
+                except:
+                    parm_path = None
             else:
                 parm_path = 'empty_tab'
-            widgets.append([text, parm_path])
+            if parm_path:
+                widgets.append([text, parm_path])
 
         class Backuper(QObject):
             finished = Signal()
@@ -213,11 +225,22 @@ class VEXEditorTabWidget(QTabWidget):
                 mode=0,
                 text=''
             ))
+        if self.find_dial:
+            self.find_dial.close()
 
     def select_tab_node(self):
         c = self.current()
         if c.parm:
             c.parm.node().setCurrent(1)
+            # go to node
+            d = hou.ui.curDesktop()
+            panes = d.panes()
+            tabs = list(itertools.chain(*[list(x.tabs()) for x in panes]))
+            for tab in tabs:
+                if tab.type() == hou.paneTabType.NetworkEditor:
+                    if tab.isCurrentTab():
+                        tab.setCurrentNode(c.parm.node())
+                        return
 
     def open_tab_file(self):
         c = self.current()
@@ -240,11 +263,14 @@ class VEXEditorTabWidget(QTabWidget):
     def show_context_help(self):
         cur = self.current()
         tc = cur.edit.textCursor()
+        pos = tc.position()
         tc.select(QTextCursor.WordUnderCursor)
         text = tc.selectedText()
+        if not text or not re.match(r"[\w\d_]+", text) or not text in keywords.get_functions():
+            alltext = cur.edit.toPlainText()
+            text = vex_parser.Parser.parse_help_line(alltext[:pos])
         if not text:
             return
-
         # special link
         for h in context_help.context_help:
             if text in h['names']:
@@ -453,3 +479,18 @@ class VEXEditorTabWidget(QTabWidget):
             self.timer.start()
         else:
             self.timer.stop()
+
+    def update_replace_dialog(self):
+        cur = self.current()
+        if not cur:
+            return
+        def clear_dial():
+            if self.find_dial:
+                self.find_dial.close()
+                self.find_dial.deleteLater()
+                self.find_dial = None
+        self.find_dial = find_replace.FindReplaceDialog(cur.edit, hqt.houWindow)
+        self.find_dial.closed.connect(clear_dial)
+        self.find_dial.show()
+        self.find_dial.activateWindow()
+        self.find_dial.find_le.setFocus()

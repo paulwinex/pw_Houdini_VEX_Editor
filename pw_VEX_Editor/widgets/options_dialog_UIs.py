@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'D:\Dropbox\Dropbox\pw_pipeline\pw_pipeline\assets\houdini\python\VEX\pw_VEX_Editor\widgets\options_dialog.ui'
+# Form implementation generated from reading ui file 'D:\Dropbox\Dropbox\pw_pipeline\pw_pipeline\assets\houdini\python\VEX\pw_Houdini_VEX_Editor\pw_VEX_Editor\widgets\options_dialog.ui'
 #
-# Created: Thu Dec 03 12:34:20 2015
-#      by: pyside-uic 0.2.15 running on PySide 1.2.2
+# Created: Thu Mar 17 10:41:34 2016
+#      by: pyside-uic 0.2.15 running on PySide 1.2.4
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -12,7 +12,7 @@ from PySide import QtCore, QtGui
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
-        Dialog.resize(425, 581)
+        Dialog.resize(425, 601)
         self.verticalLayout_7 = QtGui.QVBoxLayout(Dialog)
         self.verticalLayout_7.setContentsMargins(1, 1, 1, 1)
         self.verticalLayout_7.setObjectName("verticalLayout_7")
@@ -20,7 +20,7 @@ class Ui_Dialog(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName("scrollArea")
         self.scrollAreaWidgetContents = QtGui.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 421, 577))
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 421, 597))
         self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
         self.verticalLayout_4 = QtGui.QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_4.setObjectName("verticalLayout_4")
@@ -114,6 +114,9 @@ class Ui_Dialog(object):
         self.use_external_browser_cbx = QtGui.QCheckBox(self.groupBox_5)
         self.use_external_browser_cbx.setObjectName("use_external_browser_cbx")
         self.verticalLayout_6.addWidget(self.use_external_browser_cbx)
+        self.help_window_cbx = QtGui.QCheckBox(self.groupBox_5)
+        self.help_window_cbx.setObjectName("help_window_cbx")
+        self.verticalLayout_6.addWidget(self.help_window_cbx)
         self.verticalLayout_4.addWidget(self.groupBox_5)
         self.save_btn = QtGui.QPushButton(self.scrollAreaWidgetContents)
         self.save_btn.setObjectName("save_btn")
@@ -152,10 +155,12 @@ class Ui_Dialog(object):
         self.show_whitespaces_cbx.setText(QtGui.QApplication.translate("Dialog", "Show Whitespaces", None, QtGui.QApplication.UnicodeUTF8))
         self.show_toolbar_cbx.setToolTip(QtGui.QApplication.translate("Dialog", "<html><head/><body><p>Show whitespaces in editor</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.show_toolbar_cbx.setText(QtGui.QApplication.translate("Dialog", "Show Toolbar", None, QtGui.QApplication.UnicodeUTF8))
-        self.groupBox_5.setTitle(QtGui.QApplication.translate("Dialog", "Quick Help", None, QtGui.QApplication.UnicodeUTF8))
+        self.groupBox_5.setTitle(QtGui.QApplication.translate("Dialog", "Help", None, QtGui.QApplication.UnicodeUTF8))
         self.use_online_manual_cbx.setToolTip(QtGui.QApplication.translate("Dialog", "<html><head/><body><p>Open quick help from sidefx.com</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.use_online_manual_cbx.setText(QtGui.QApplication.translate("Dialog", "Use Online Manual", None, QtGui.QApplication.UnicodeUTF8))
         self.use_external_browser_cbx.setToolTip(QtGui.QApplication.translate("Dialog", "<html><head/><body><p>Use default Houdini web browser or standart system web browser</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.use_external_browser_cbx.setText(QtGui.QApplication.translate("Dialog", "Use External Browser For Quick Help", None, QtGui.QApplication.UnicodeUTF8))
+        self.help_window_cbx.setToolTip(QtGui.QApplication.translate("Dialog", "<html><head/><body><p>Use default Houdini web browser or standart system web browser</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
+        self.help_window_cbx.setText(QtGui.QApplication.translate("Dialog", "Show Help WIndow", None, QtGui.QApplication.UnicodeUTF8))
         self.save_btn.setText(QtGui.QApplication.translate("Dialog", "Save", None, QtGui.QApplication.UnicodeUTF8))
 

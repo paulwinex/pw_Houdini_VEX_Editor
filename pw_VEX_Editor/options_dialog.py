@@ -57,6 +57,7 @@ class OptionsDialogClass(QDialog, options_dialog_UIs.Ui_Dialog):
         self.use_online_manual_cbx.setChecked(data.get('use_online_manual',vex_settings.default_data['use_online_manual']))
         self.use_external_browser_cbx.setChecked(data.get('use_external_browser',vex_settings.default_data['use_external_browser']))
         self.aurocompleter_cbx.setChecked(data.get('autocompleter',vex_settings.default_data['autocompleter']))
+        self.help_window_cbx.setChecked(data.get('helpwindow',vex_settings.default_data['helpwindow']))
         # preview
         self.update_font_preview()
 
@@ -82,7 +83,8 @@ class OptionsDialogClass(QDialog, options_dialog_UIs.Ui_Dialog):
             show_toolbar=self.show_toolbar_cbx.isChecked(),
             use_online_manual=self.use_online_manual_cbx.isChecked(),
             use_external_browser=self.use_external_browser_cbx.isChecked(),
-            autocompleter=self.aurocompleter_cbx.isChecked()
+            autocompleter=self.aurocompleter_cbx.isChecked(),
+            helpwindow=self.help_window_cbx.isChecked()
         )
         return data
 

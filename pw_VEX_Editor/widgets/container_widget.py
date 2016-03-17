@@ -12,6 +12,7 @@ from .. import vex_settings
 class Container(QWidget):
     errorsSignal = Signal(str)
     noErrorsSignal = Signal()
+    helpSignal = Signal(str)
     def __init__(self, text, file=None, parm=None, section=None, parent=None):
         super(Container, self).__init__()#parent)
         self.par = parent
@@ -26,6 +27,7 @@ class Container(QWidget):
         self.category = None
         # input widget
         self.edit = input_widget.VEXEditorInputWidget(self)
+        self.edit.helpSignal.connect(self.helpSignal.emit)
         self.edit.messageSignal.connect(parent.message)
         self.edit.saveSignal.connect(self.save_current_text)
         # # numbers
@@ -336,9 +338,12 @@ class Container(QWidget):
         pat = r'((\w+)\s+\w+\s*=\s*)?(ch[visrampf]*)\s*\([\'"](.+?)[\'"]\)'
         result = []
         for d in re.findall(pat,text):
-            result.append(dict(
-                func=d[2].strip(),
-                name=d[3],
-                type=d[1]
-            ))
+            if not re.findall(r"[./]", d[-1]):
+                result.append(dict(
+                    func=d[2].strip(),
+                    name=d[3],
+                    type=d[1]
+                ))
         return  result
+
+

@@ -32,12 +32,14 @@ escapeButtons = [Qt.Key_Return, Qt.Key_Enter, Qt.Key_Left, Qt.Key_Right, Qt.Key_
 class VEXEditorInputWidget(QTextEdit):
     saveSignal = Signal()
     messageSignal = Signal(str)
+    helpSignal = Signal(str)
     def __init__(self, parent):
         QTextEdit.__init__(self, parent)
         self.setWordWrapMode(QTextOption.NoWrap)
         self.setAcceptRichText(False)
         self.setAcceptDrops(True)
         self.container = parent
+
         self.bg = [0,0,0]
         self.s = vex_settings.EditorSettingsClass()
         self.fs = self.s.get_value('font_size',vex_settings.default_data['font_size'])
@@ -49,7 +51,12 @@ class VEXEditorInputWidget(QTextEdit):
         self.desk = QApplication.desktop()
         self.setTextEditFontSize(self.fs)
         self.completer = completer_widget.CompleterListClass(parent, self)
+
+        self.cursorPositionChanged.connect(self.parse_help_line)
+
         self.use_completer = False
+        self.use_help_window = False
+        self.last_help = None
         self.live_templates = []
         self.update_live_templates()
         self.update_from_settings()
@@ -84,7 +91,7 @@ class VEXEditorInputWidget(QTextEdit):
         QTextEdit.hideEvent(self, *args, **kwargs)
 
     def focusOutEvent(self, event):
-        super(VEXEditorInputWidget, self).focusOutEvent(event)
+        QTextEdit.focusOutEvent(self, event)
         if self.use_completer:
             if not QApplication.activeWindow() is self.completer:
                 self.completer.hideMe()
@@ -227,6 +234,7 @@ class VEXEditorInputWidget(QTextEdit):
 
         self.container.lineNum.update()
         parse = 0
+        parse_help = 1
         cursor = self.textCursor()
         use_live_template = True
         # apply complete
@@ -343,8 +351,9 @@ class VEXEditorInputWidget(QTextEdit):
         elif event.key() == Qt.Key_Down or event.key() == Qt.Key_Up:
             if self.completer.isVisible():
                 self.completer.activateCompleter(event.key())
-                self.completer.setFocus()
                 return
+            else:
+                self.setFocus()
         # just close completer
         elif not event.modifiers() == Qt.NoModifier and not event.modifiers() == Qt.ShiftModifier:
             self.completer.hideMe()
@@ -356,20 +365,31 @@ class VEXEditorInputWidget(QTextEdit):
             QTextEdit.keyPressEvent(self, event)
 
         # start parse text
-        if parse and event.text():
-            self.open_completer()
+        if parse and event.text() and self.use_completer:
+            self.parse_code()
+            # self.open_completer()
         else:
             if self.use_completer:
                 self.completer.hideMe()
+        if self.use_help_window:
+            self.parse_help_line()
 
-    def open_completer(self):
-        if not self.use_completer:
-            return
-        curson = self.textCursor()
-        pos = curson.position()
+    def parse_code(self):
+        cursor = self.textCursor()
+        pos = cursor.position()
         text = self.toPlainText()
         line = text[:pos].split('\n')[-1]
         if line:
+            self.open_completer(line, text, pos)
+
+    def open_completer(self, line, text, pos):
+        # if not self.use_completer:
+        #     return
+        # curson = self.textCursor()
+        # pos = curson.position()
+        # text = self.toPlainText()
+        # line = text[:pos].split('\n')[-1]
+        # if line:
             # include files
             if line.strip().startswith('#include'):
                 #f = re.findall(r'#include <([.\w\d]*)$', line)
@@ -388,7 +408,6 @@ class VEXEditorInputWidget(QTextEdit):
                 p = re.findall(cnx + r'(\w*)$', line)
                 if p:
                     word = p[0]
-
                     if word:
                         comps = [x for x in completer_keywords.context_complete[cnx] if x.startswith(word)]
                     else:
@@ -482,8 +501,22 @@ class VEXEditorInputWidget(QTextEdit):
                     self.completer.update_complete_list(names)
             else:
                 self.completer.hideMe()
+        # else:
+        #     self.completer.hideMe()
+
+    def parse_help_line(self, line=None):
+        cursor = self.textCursor()
+        pos = cursor.position()
+        text = self.toPlainText()
+        # line = text[:pos].split('\n')[-1]
+        func = vex_parser.Parser.parse_help_line(text[:pos])
+        hlp = completer_keywords.get_functions_help_window(func)
+        if hlp:
+            # if not self.last_help == hlp:
+            self.helpSignal.emit(hlp)
+                # self.last_help = hlp
         else:
-            self.completer.hideMe()
+            self.helpSignal.emit('')
 
     def commentSelected(self):
         cursor = self.textCursor()
@@ -685,6 +718,7 @@ class VEXEditorInputWidget(QTextEdit):
         self.setTextEditFontSize()
         self.show_white_spaces(s.get('show_whitespaces',vex_settings.default_data['show_whitespaces']))
         self.use_completer = s.get('autocompleter', vex_settings.default_data['autocompleter'])
+        self.use_help_window = s.get('helpwindow', vex_settings.default_data['helpwindow'])
 
     def show_white_spaces(self, state):
         option =  self.document().defaultTextOption()
@@ -695,3 +729,37 @@ class VEXEditorInputWidget(QTextEdit):
             option.setFlags(option.flags() & ~QTextOption.ShowTabsAndSpaces)
             option.setFlags(option.flags() & ~QTextOption.AddSpaceForLineAndParagraphSeparators)
         self.document().setDefaultTextOption(option)
+
+    def select_word(self, pattern, index):
+        text = self.toPlainText()
+        if not pattern in text:
+            return 0
+        cursor = self.textCursor()
+        # indexis = [(m.start(0), m.end(0)) for m in re.finditer(self.fixRegextSymbols(pattern), text)]
+        indexis = [(m.start(0), m.end(0)) for m in re.finditer(pattern, text)]
+        lastIndex = 0
+        if not indexis:
+            return 0
+        for i in indexis:
+            if i[1] > index:
+                cursor.setPosition(i[0])
+                cursor.setPosition(i[1], QTextCursor.KeepAnchor)
+                lastIndex = i[1]
+                break
+        self.setTextCursor(cursor)
+        return lastIndex
+
+    def replace_selected(self, rep):
+        cursor = self.textCursor()
+        sel = cursor.selectedText()
+        if sel:
+            l = len(sel)
+            cursor.removeSelectedText()
+            cursor.insertText(rep)
+            self.setTextCursor(cursor)
+            return l
+
+    def replace_all(self, src, trg):
+        text = self.toPlainText()
+        text = text.replace(src, trg)
+        self.setText(text)

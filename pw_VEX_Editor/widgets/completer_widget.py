@@ -121,11 +121,13 @@ class CompleterListClass(QListWidget):
         return self.e
 
     def activateCompleter(self, key=False):
-        self.activateWindow()
         if not key==Qt.Key_Up:
-            self.setCurrentRow(min(1, self.count()-1))
+            mov = 1
         else:
-            self.setCurrentRow(self.count()-1)
+            mov = -1
+        setRow = self.currentRow() + mov
+        self.setCurrentRow(min(max(0, setRow), self.count()-1))
+
 
     def showMe(self):
         self.show()
