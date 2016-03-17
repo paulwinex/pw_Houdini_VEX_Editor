@@ -59,7 +59,7 @@ and feature requests can be sent to my email: paulwinex@gmail.com.
 >        Unlike the Point SOP, this does not use local variables. Further, all backtick expressions
 >        and $ F variables will be evaluated at frame 1, not the current time. Use Frame, Time, or TimeInc instead.
 
-###    [New in v1.0.6](newin106)
+###    New in v1.0.6
 
 >   You can show or hide tool bar
 
