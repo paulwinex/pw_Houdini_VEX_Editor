@@ -59,7 +59,7 @@ and feature requests can be sent to my email: paulwinex@gmail.com.
 >        Unlike the Point SOP, this does not use local variables. Further, all backtick expressions
 >        and $ F variables will be evaluated at frame 1, not the current time. Use Frame, Time, or TimeInc instead.
 
-###    New in v1.0.6
+### New in v1.0.6
 
 >   You can show or hide tool bar
 
@@ -69,7 +69,7 @@ and feature requests can be sent to my email: paulwinex@gmail.com.
 
 >   Added "Open settings folder" action in Editor menu
 
-### [Bugfix](#bugfix1)
+### Bugfix
 
 >   Renamed settings folder
 
@@ -79,7 +79,7 @@ and feature requests can be sent to my email: paulwinex@gmail.com.
 
 >   Some fixes for linux systems
 
-###    [New in v1.0.7](newin107)
+### New in v1.0.7
 
 >   Added help window to show quick help for function in cursor focus (Menu -> Editor -> Help Window)
 
@@ -87,7 +87,7 @@ and feature requests can be sent to my email: paulwinex@gmail.com.
 
 >   Added "Find and Replace" window. Use Ctrl+F to open
 
-### [Bugfix](#bugfix2)
+### Bugfix
 
 >   Fixed disappearing autocomplite widget in Houdini 15
 
