@@ -93,6 +93,7 @@ and feature requests can be sent to my email: paulwinex@gmail.com.
 
 >   "Select node" button now open parent network in active network tab
 
+>   Now help browser open help in same window in Houdini 15
 
 # Interface Description
 ![alt tag](http://www.paulwinex.ru/wp-content/uploads/2015/11/interface.png)

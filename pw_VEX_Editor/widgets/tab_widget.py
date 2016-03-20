@@ -285,15 +285,21 @@ class VEXEditorTabWidget(QTabWidget):
         self.open_url_in_help_browser(url+text)
 
     def open_url_in_help_browser(self, url):
+        print url
         if self.settings.get_value('use_external_browser', False):
             import webbrowser
             webbrowser.open_new(url)
         else:
-            desktop = hou.ui.curDesktop()
-            browser = desktop.paneTabOfType(hou.paneTabType.HelpBrowser)
-            if browser is None:
-                browser = desktop.createFloatingPane(hou.paneTabType.HelpBrowser)
+            browser = [x for x in hou.ui.paneTabs() if x.type() == hou.paneTabType.HelpBrowser]
+            if browser:
+                browser = browser[0]
+            else:
+                desktop = hou.ui.curDesktop()
+                browser = desktop.paneTabOfType(hou.paneTabType.HelpBrowser)
+                if browser is None:
+                    browser = desktop.createFloatingPane(hou.paneTabType.HelpBrowser)
             browser.setUrl(url)
+            browser.setIsCurrentTab()
         QTimer.singleShot(200, self.focus_me)
 
     def focus_me(self):
