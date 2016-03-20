@@ -3,13 +3,14 @@ from PySide.QtGui import *
 import find_replace_UIs
 reload(find_replace_UIs)
 from ..icons import icons
+reload(icons)
 
 class FindReplaceDialog(QDialog, find_replace_UIs.Ui_FindReplace):
     closed = Signal()
     def __init__(self, editor, parent):
         super(FindReplaceDialog, self).__init__(parent)
         self.setupUi(self)
-        self.setWindowIcon(QIcon(icons.icons['houdini']))
+        # self.setWindowIcon(QIcon(icons.icons['houdini']))
         self.setWindowFlags(Qt.Tool)
         self.editor = editor
         self.lastSearch = dict(

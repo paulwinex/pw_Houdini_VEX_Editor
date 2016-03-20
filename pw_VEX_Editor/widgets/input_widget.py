@@ -238,7 +238,8 @@ class VEXEditorInputWidget(QTextEdit):
         cursor = self.textCursor()
         use_live_template = True
         # apply complete
-        if event.modifiers() == Qt.NoModifier and event.key() in [Qt.Key_Return , Qt.Key_Enter]:
+        # if event.modifiers() == Qt.NoModifier and event.key() in [Qt.Key_Return , Qt.Key_Enter]:
+        if event.key() in [Qt.Key_Return , Qt.Key_Enter]:
             if self.use_completer and self.completer.isVisible():
                 self.completer.apply_current_complete()
                 self.completer.hideMe()
@@ -289,7 +290,9 @@ class VEXEditorInputWidget(QTextEdit):
         elif event.key() == Qt.Key_Tab:
             if self.use_completer:
                 if self.completer.isVisible():
+                    # self.completer.apply_current_complete()
                     self.completer.hideMe()
+                    # return
                     # if use_live_template:
                     #     self.live_templates(cursor, event)
                     #     use_live_template = False
@@ -577,8 +580,10 @@ class VEXEditorInputWidget(QTextEdit):
         line = cursor.selectedText()
         add = False
         if line:
-            if line.strip()[0] != '(':
-                add= True
+            line = line.split()
+            if line:
+                if line[0] != '(':
+                    add= True
         else:
             add=True
         cursor.setPosition(pos)
