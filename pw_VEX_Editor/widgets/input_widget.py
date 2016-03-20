@@ -238,8 +238,8 @@ class VEXEditorInputWidget(QTextEdit):
         cursor = self.textCursor()
         use_live_template = True
         # apply complete
-        # if event.modifiers() == Qt.NoModifier and event.key() in [Qt.Key_Return , Qt.Key_Enter]:
-        if event.key() in [Qt.Key_Return , Qt.Key_Enter]:
+        if event.modifiers() == Qt.NoModifier and event.key() in [Qt.Key_Return , Qt.Key_Enter]:
+        # if event.key() in [Qt.Key_Return , Qt.Key_Enter]:
             if self.use_completer and self.completer.isVisible():
                 self.completer.apply_current_complete()
                 self.completer.hideMe()
