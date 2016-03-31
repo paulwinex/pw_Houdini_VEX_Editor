@@ -1,7 +1,7 @@
 from .. widgets.vexSyntax import keywords
 from PySide.QtCore import QProcess
 from .. import vex_settings
-import os, hou, re, json, zipfile
+import os, hou, re, json, zipfile, subprocess
 
 # save functions in memory
 global functions
@@ -10,6 +10,7 @@ global attributes
 attributes = None
 global functions_help
 functions_help = None
+
 
 def get_functions():
     global functions
@@ -42,88 +43,47 @@ def get_functions_help_window(func_name):
         if os.path.exists(cache_file):
             comp = json.load(open(cache_file))
             functions_help = comp['functions']
-
-    if func_name in functions_help:
-        res = r'<br>'.join([r'<u><b>%s</b></u>' % functions_help[func_name].get('hlp','')]+[ x for x in functions_help[func_name]['args']])
-        # res = '\n'.join(['%s' % functions_help[func_name].get('hlp','')]+[ x for x in functions_help[func_name]['args']])
-        if res:
-            return res
-        else:
-            return func_name+'()'
-
-def generate_completes2(force=False):
-    # check parsed functions
-    cache_file = vex_settings.get_autocomplete_cache_file()
-    if os.path.exists(cache_file) and not force:
-        return True
-    # get vcc
-    vcc = os.path.join(hou.getenv('HFS'), 'bin', 'vcc').replace('/','\\')
-    if os.name == 'nt':
-        vcc = vcc + '.exe'
-    if not os.path.exists(vcc):
-        return False
-    # generate new
-    funcs = {}
-    attrs = {}
-    process = QProcess()
-    process.start(' '.join([vcc, '-X']))
-    process.waitForFinished()
-    lines =  str(process.readAll()).split('\n')
-    for context in lines:
-        if context:
-            process.start(' '.join([vcc, '-X', context]))
-            process.waitForFinished()
-            context_lines =  str(process.readAll())
-            # variables
-            variables = re.search(r'Global Variables:(.*)Control Statements:', context_lines, re.DOTALL)
-            if variables:
-                lines = variables.group(1).strip().split('\n')
-                for l in lines:
-                    s = l.split()
-                    if len(s)==3:
-                        attrs[s[-1]] = s[-2]
-            # functions
-            pat = r'^\s*(\w+\[?\]?)\s(\w+)(\(.+\))'
-            for l in context_lines.split('\n'):
-                func = re.findall(pat, str(l))
-                if func:
-                    if func[0][1] in funcs:
-                        funcs[func[0][1]].append({'ret': func[0][0], 'args':func[0][2]})
-                    else:
-                        funcs[func[0][1]] = [{'ret': func[0][0], 'args':func[0][2]}]
-    # save to cache
-    if os.path.exists(cache_file):
-        comp = json.load(open(cache_file))
-    else:
-        comp = {}
-    comp['functions'] = funcs
-    comp['attributes'] = attrs
-    json.dump(comp, open(cache_file, 'w'))
-    return True
+    if functions_help:
+        if func_name in functions_help:
+            res = r'<br>'.join([r'<u><b>%s</b></u>' % functions_help[func_name].get('hlp','')]+[ x for x in functions_help[func_name]['args']])
+            # res = '\n'.join(['%s' % functions_help[func_name].get('hlp','')]+[ x for x in functions_help[func_name]['args']])
+            if res:
+                return res
+            else:
+                return func_name+'()'
 
 def generate_completes(force=False):
+    # si = subprocess.STARTUPINFO()
+    # si.dwFlags |= subprocess.STARTF_USESHOWWINDOW
     # check parsed functions
     cache_file = vex_settings.get_autocomplete_cache_file()
     if os.path.exists(cache_file) and not force:
         return True
     # get vcc
-    vcc = os.path.join(hou.getenv('HFS'), 'bin', 'vcc').replace('/','\\')
+    vcc = os.path.join(hou.getenv('HFS'), 'bin', 'vcc')
     if os.name == 'nt':
-        vcc = vcc + '.exe'
+        vcc = (vcc + '.exe').replace('/','\\')
+        def get_output(cmd):
+            if isinstance(cmd, list):
+                cmd = ' '.join(cmd)
+            process = QProcess()
+            process.start(cmd)
+            process.waitForFinished()
+            return str(process.readAll())
+    else:
+        def get_output(cmd):
+            return subprocess.check_output(cmd)#, startupinfo=si)
+
     if not os.path.exists(vcc):
         return False
     # generate new
     funcs = {}
     attrs = {}
-    process = QProcess()
-    process.start(' '.join([vcc, '-X']))
-    process.waitForFinished()
-    lines =  str(process.readAll()).split('\n')
+    lines =  get_output([vcc, '-X']).split('\n')
     for context in lines:
         if context:
-            process.start(' '.join([vcc, '-X', context]))
-            process.waitForFinished()
-            context_lines =  str(process.readAll())
+            # print 'Context: %s' % context
+            context_lines = get_output([vcc, '-X', context])
             # variables
             variables = re.search(r'Global Variables:(.*)Control Statements:', context_lines, re.DOTALL)
             if variables:
@@ -165,7 +125,7 @@ def parse_help(source):
         zf = zipfile.ZipFile(vexzip, 'r')
     except:
         return source
-    funcs = {}
+    # funcs = {}
     for f in zf.namelist():
         if f.startswith('functions'):
             func = os.path.splitext(os.path.basename(f))[0]
@@ -182,6 +142,61 @@ def parse_help(source):
             if data:
                 source[func] = data
     return source
+
+
+# def generate_completes_old(force=False):
+#     # check parsed functions
+#     cache_file = vex_settings.get_autocomplete_cache_file()
+#     if os.path.exists(cache_file) and not force:
+#         return True
+#     # get vcc
+#     vcc = os.path.join(hou.getenv('HFS'), 'bin', 'vcc').replace('/','\\')
+#     if os.name == 'nt':
+#         vcc = vcc + '.exe'
+#     if not os.path.exists(vcc):
+#         return False
+#     print vcc
+#     # generate new
+#     funcs = {}
+#     attrs = {}
+#     process = QProcess()
+#     process.start(' '.join([vcc, '-X']))
+#     process.waitForFinished()
+#     lines =  str(process.readAll()).split('\n')
+#     for context in lines:
+#         if context:
+#             process.start(' '.join([vcc, '-X', context]))
+#             process.waitForFinished()
+#             context_lines =  str(process.readAll())
+#             # variables
+#             variables = re.search(r'Global Variables:(.*)Control Statements:', context_lines, re.DOTALL)
+#             if variables:
+#                 lines = variables.group(1).strip().split('\n')
+#                 for l in lines:
+#                     s = l.split()
+#                     if len(s)==3:
+#                         attrs[s[-1]] = s[-2]
+#             # functions
+#             pat = r'^\s*(\w+\[?\]?)\s(\w+)(\(.+\))'
+#             for l in context_lines.split('\n'):
+#                 func = re.findall(pat, str(l))
+#                 if func:
+#                     if func[0][1] in funcs:
+#                         funcs[func[0][1]].append({'ret': func[0][0], 'args':func[0][2]})
+#                     else:
+#                         funcs[func[0][1]] = [{'ret': func[0][0], 'args':func[0][2]}]
+#     # save to cache
+#     if os.path.exists(cache_file):
+#         comp = json.load(open(cache_file))
+#     else:
+#         comp = {}
+#     comp['functions'] = funcs
+#     comp['attributes'] = attrs
+#     print comp['finctions'].keys()
+#     print cache_file
+#     json.dump(comp, open(cache_file, 'w'))
+#     return True
+
 
 ##############################################################################
 ##########  DEFAULT LISTS ####################################################

@@ -32,7 +32,7 @@ default_data = dict(
             backup_timeout=3, #min
             max_backup_files=30,
             autocompleter=True,
-            helpwindow=True
+            helpwindow=False
         )
 
 def get_settings_folder():
@@ -64,10 +64,10 @@ class EditorSettingsClass(object):
                 json.load(open(path))
                 return path
             except:
-                print 'VEX Editor: ERROR READ SETTINGS FILE'
+                print 'VEX Editor: Settings file not found'
                 try:
                     json.dump({},open(path, 'w'))
-                    print 'VEX Editor: NEW FILE CREATED'
+                    print 'VEX Editor: New settings file created'
                     return path
                 except:
                     print 'VEX Editor: ERROR CREATE SETTINGS FILE'
