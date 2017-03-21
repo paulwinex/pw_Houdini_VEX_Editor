@@ -1,9 +1,14 @@
-from PySide.QtCore import *
-from PySide.QtGui import *
+try:
+    from PySide.QtCore import *
+    from PySide.QtGui import *
+except:
+    from PySide2.QtCore import *
+    from PySide2.QtGui import *
+    from PySide2.QtWidgets import *
 from widgets import template_editor_UIs, template_editor_text_widget
 reload(template_editor_UIs)
 reload(template_editor_text_widget)
-import hqt
+import hqt, hou
 import os, json, re
 
 class TemplateEditorClass(QDialog, template_editor_UIs.Ui_templateEditor):
@@ -197,9 +202,13 @@ class TemplateEditorClass(QDialog, template_editor_UIs.Ui_templateEditor):
     def remove_template(self):
         if self.templates_lw.selectedItems():
             item = self.templates_lw.selectedItems()[0]
-            if QMessageBox.question(self, 'Close Tab',
-                               'Delete this template?\n'+item.data(32)['name'],
-                               QMessageBox.Yes|QMessageBox.No) == QMessageBox.Yes:
+            if hou.applicationVersion()[0] >= 16:
+                res = QMessageBox.question(self, 'Close Tab',
+                                   'Delete this template?\n'+item.data(32)['name']) == QMessageBox.Yes
+            else:
+                res = QMessageBox.question(self, 'Close Tab',
+                                           'Delete this template?\n' + item.data(32)['name'], QMessageBox.Yes | QMessageBox.No) == QMessageBox.Yes
+            if res:
                 path = item.data(32)['file']
                 if os.path.exists(path):
                     os.remove(path)

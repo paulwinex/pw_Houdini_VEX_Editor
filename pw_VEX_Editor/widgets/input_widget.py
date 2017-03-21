@@ -1,5 +1,10 @@
-from PySide.QtCore import *
-from PySide.QtGui import *
+try:
+    from PySide.QtCore import *
+    from PySide.QtGui import *
+except:
+    from PySide2.QtCore import *
+    from PySide2.QtGui import *
+    from PySide2.QtWidgets import *
 import re, os, hou
 from vexSyntax import design, syntaxHighLighter
 import completer_widget
@@ -7,8 +12,8 @@ from .. autocomplete import vex_parser
 from .. autocomplete import keywords as completer_keywords
 from vexSyntax import keywords as syntax_keyword
 from templates import live_templates
-from .. import vex_settings
-reload(vex_settings)
+# from .. import vex_settings
+# reload(vex_settings)
 reload(design)
 reload(syntaxHighLighter)
 reload(completer_keywords)
@@ -41,6 +46,7 @@ class VEXEditorInputWidget(QTextEdit):
         self.container = parent
 
         self.bg = [0,0,0]
+        from .. import vex_settings
         self.s = vex_settings.EditorSettingsClass()
         self.fs = self.s.get_value('font_size',vex_settings.default_data['font_size'])
         self.fn = self.s.get_value('font_name',vex_settings.default_data['font_name'])
@@ -55,7 +61,7 @@ class VEXEditorInputWidget(QTextEdit):
         self.cursorPositionChanged.connect(self.parse_help_line)
 
         self.use_completer = False
-        self.use_help_window = False
+        # self.use_help_window = True
         self.last_help = None
         self.live_templates = []
         self.update_live_templates()
@@ -64,8 +70,8 @@ class VEXEditorInputWidget(QTextEdit):
 
 
     def update_live_templates(self):
-        from .. import template_editor
-        self.live_templates = template_editor.TemplateEditorClass.get_live_templates()
+        from pw_VEX_Editor.template_editor import TemplateEditorClass
+        self.live_templates = TemplateEditorClass.get_live_templates()
 
     def apply_style(self, theme=None, colors=None):
         # get style
@@ -374,8 +380,8 @@ class VEXEditorInputWidget(QTextEdit):
         else:
             if self.use_completer:
                 self.completer.hideMe()
-        if self.use_help_window:
-            self.parse_help_line()
+        # if self.use_help_window:
+        self.parse_help_line()
 
     def parse_code(self):
         cursor = self.textCursor()
@@ -508,6 +514,10 @@ class VEXEditorInputWidget(QTextEdit):
         #     self.completer.hideMe()
 
     def parse_help_line(self, line=None):
+        # print QApplication.mouseButtons()
+        if self.textCursor().selectedText():
+            # self.helpSignal.emit('')
+            return
         cursor = self.textCursor()
         pos = cursor.position()
         text = self.toPlainText()
@@ -517,6 +527,7 @@ class VEXEditorInputWidget(QTextEdit):
         if hlp:
             # if not self.last_help == hlp:
             self.helpSignal.emit(hlp)
+            QTimer.singleShot(10,self.ensureCursorVisible)
                 # self.last_help = hlp
         else:
             self.helpSignal.emit('')
@@ -718,12 +729,13 @@ class VEXEditorInputWidget(QTextEdit):
 
     def update_from_settings(self):
         s = self.s.get_settings()
+        from .. import vex_settings
         self.fs = s.get('font_size',vex_settings.default_data['font_size'])
         self.fn = s.get('font_name',vex_settings.default_data['font_name'])
         self.setTextEditFontSize()
         self.show_white_spaces(s.get('show_whitespaces',vex_settings.default_data['show_whitespaces']))
         self.use_completer = s.get('autocompleter', vex_settings.default_data['autocompleter'])
-        self.use_help_window = s.get('helpwindow', vex_settings.default_data['helpwindow'])
+        # self.use_help_window = s.get('helpwindow', vex_settings.default_data['helpwindow'])
 
     def show_white_spaces(self, state):
         option =  self.document().defaultTextOption()

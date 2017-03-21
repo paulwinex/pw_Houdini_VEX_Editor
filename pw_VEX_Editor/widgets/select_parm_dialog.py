@@ -1,5 +1,10 @@
-from PySide.QtCore import *
-from PySide.QtGui import *
+try:
+    from PySide.QtCore import *
+    from PySide.QtGui import *
+except:
+    from PySide2.QtCore import *
+    from PySide2.QtGui import *
+    from PySide2.QtWidgets import *
 import select_parm_dialog_UIs
 reload(select_parm_dialog_UIs)
 import hqt

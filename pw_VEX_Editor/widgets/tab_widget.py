@@ -1,5 +1,10 @@
-from PySide.QtCore import *
-from PySide.QtGui import *
+try:
+    from PySide.QtCore import *
+    from PySide.QtGui import *
+except:
+    from PySide2.QtCore import *
+    from PySide2.QtGui import *
+    from PySide2.QtWidgets import *
 import hqt, hou, datetime, time, os, re, itertools
 from .. autocomplete import keywords, vex_parser
 reload(keywords)
@@ -9,7 +14,7 @@ import container_widget
 reload(container_widget)
 import find_replace
 reload((find_replace))
-from .. import vex_settings
+
 tabsNodeName = 'VexEditorTabs'
 
 class VEXEditorTabWidget(QTabWidget):
@@ -18,6 +23,7 @@ class VEXEditorTabWidget(QTabWidget):
     lastClosedSignal = Signal()
     def __init__(self, parent):
         super(VEXEditorTabWidget, self).__init__(parent)
+        from .. import vex_settings
         # ui
         self.setTabsClosable(True)
         self.setMovable(True)
@@ -37,9 +43,17 @@ class VEXEditorTabWidget(QTabWidget):
         self.update_backup_timer()
 
     def closeTab(self, i):
-        if QMessageBox.question(hqt.houWindow, 'Close Tab',
-                               'Close this tab without saving?\n'+self.tabText(i),
-                               QMessageBox.Yes|QMessageBox.No) == QMessageBox.Yes:
+        if hou.applicationVersion()[0] >= 16:
+            res = QMessageBox.question(hqt.houWindow, 'Close Tab',
+                                   'Close this tab without saving?\n'+self.tabText(i),
+                                    # QMessageBox.Yes | QMessageBox.No
+                                    ) == QMessageBox.Yes
+        else:
+            res = QMessageBox.question(hqt.houWindow, 'Close Tab',
+                                       'Close this tab without saving?\n' + self.tabText(i),
+                                       QMessageBox.Yes | QMessageBox.No
+                                       ) == QMessageBox.Yes
+        if res:
             self.removeTab(i)
         if self.count()== 0:
             self.lastClosedSignal.emit()
@@ -114,6 +128,7 @@ class VEXEditorTabWidget(QTabWidget):
             c.define_new_source()
 
     def create_backup(self):
+        from .. import vex_settings
         self.messageSignal.emit('Backup...')
         widgets = []
         for i in range(self.count()):
@@ -251,6 +266,7 @@ class VEXEditorTabWidget(QTabWidget):
 #######################################################################
 
     def get_help_url(self):
+        from .. import vex_settings
         if self.settings.get_value('use_online_manual', False):
             return vex_settings.help_online_url
         else:
@@ -481,6 +497,7 @@ class VEXEditorTabWidget(QTabWidget):
         self.update_backup_timer()
 
     def update_backup_timer(self):
+        from .. import vex_settings
         if self.settings.get_value('create_backups', vex_settings.default_data['create_backups']):
             self.timer.start()
         else:

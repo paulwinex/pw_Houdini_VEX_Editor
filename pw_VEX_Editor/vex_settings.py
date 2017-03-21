@@ -32,7 +32,7 @@ default_data = dict(
             backup_timeout=3, #min
             max_backup_files=30,
             autocompleter=True,
-            helpwindow=False
+            # helpwindow=False
         )
 
 def get_settings_folder():

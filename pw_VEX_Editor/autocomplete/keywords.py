@@ -1,6 +1,10 @@
 from .. widgets.vexSyntax import keywords
-from PySide.QtCore import QProcess
-from .. import vex_settings
+
+try:
+    from PySide.QtCore import QProcess
+except:
+    from PySide2.QtCore import QProcess
+
 import os, hou, re, json, zipfile, subprocess
 
 # save functions in memory
@@ -14,6 +18,7 @@ functions_help = None
 
 def get_functions():
     global functions
+    from .. import vex_settings
     if functions:
         return functions
     cache_file = vex_settings.get_autocomplete_cache_file()
@@ -26,6 +31,7 @@ def get_functions():
 
 def get_attributes():
     global attributes
+    from .. import vex_settings
     if attributes:
         return attributes
     cache_file = vex_settings.get_autocomplete_cache_file()
@@ -38,14 +44,15 @@ def get_attributes():
 
 def get_functions_help_window(func_name):
     global functions_help
+    from .. import vex_settings
     if not functions_help:
         cache_file = vex_settings.get_autocomplete_cache_file()
         if os.path.exists(cache_file):
             comp = json.load(open(cache_file))
             functions_help = comp['functions']
-    if functions_help:
+    if bool(functions_help):
         if func_name in functions_help:
-            res = r'<br>'.join([r'<u><b>%s</b></u>' % functions_help[func_name].get('hlp','')]+[ x for x in functions_help[func_name]['args']])
+            res = r'<br>'.join([r'<u><b>%s</b></u>' % functions_help[func_name].get('hlp','')]+[ x for x in functions_help[func_name].get('args','')])
             # res = '\n'.join(['%s' % functions_help[func_name].get('hlp','')]+[ x for x in functions_help[func_name]['args']])
             if res:
                 return res
@@ -56,6 +63,7 @@ def generate_completes(force=False):
     # si = subprocess.STARTUPINFO()
     # si.dwFlags |= subprocess.STARTF_USESHOWWINDOW
     # check parsed functions
+    from .. import vex_settings
     cache_file = vex_settings.get_autocomplete_cache_file()
     if os.path.exists(cache_file) and not force:
         return True

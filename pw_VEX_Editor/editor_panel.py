@@ -1,5 +1,10 @@
-from PySide.QtCore import *
-from PySide.QtGui import *
+try:
+    from PySide.QtCore import *
+    from PySide.QtGui import *
+except:
+    from PySide2.QtCore import *
+    from PySide2.QtGui import *
+    from PySide2.QtWidgets import *
 import json, os, glob, webbrowser
 import hou, hqt
 from widgets import editor_window_UIs
@@ -40,7 +45,7 @@ class VEXEditorPanelClass(QMainWindow, editor_window_UIs.Ui_editor_window):
         self.settings = vex_settings.EditorSettingsClass()
         self.theme = ''
         self.theme_colors = {}
-        self.use_help_window = False
+        # self.use_help_window = False
         self.load_settings()
         self.hstyle = hqt.get_h14_style(self.theme)
         # build ui
@@ -50,7 +55,7 @@ class VEXEditorPanelClass(QMainWindow, editor_window_UIs.Ui_editor_window):
 
         self.help_wd = help_window.HelpWindow(self)
         self.help_ly.addWidget(self.help_wd)
-        self.help_wd.hide()
+        # self.help_wd.hide()
 
         self.tab = tab_widget.VEXEditorTabWidget(self)
         self.tab_ly.addWidget(self.tab)
@@ -58,6 +63,22 @@ class VEXEditorPanelClass(QMainWindow, editor_window_UIs.Ui_editor_window):
         self.tab.messageSignal.connect(self.show_status_message)
         self.tab.lastClosedSignal.connect(self.last_tab_closed)
         self.tab.currentChanged.connect(self.update_help_window)
+
+        # self.help_btn = QPushButton('H')
+        # self.help_btn.setMaximumSize(QSize(20,20))
+
+        # def toggle_help_window():
+        #     res = self.help_wd.toggle_visible()
+            # self.splitter.setEnabled(res)
+            # if res:
+            #     self.splitter.setSizes([10000,200])
+            # else:
+            #     self.splitter.setSizes([10000,0])
+        # self.help_btn.clicked.connect(toggle_help_window)
+        self.splitter.setSizes([10000,0])
+        # self.splitter.setEnabled(False)
+        # self.statusBar().addPermanentWidget( self.help_btn)
+
         #icons
         for btn in self.load_from_file_btn, self.load_from_selected_extra_btn, self.save_current_btn, self.reload_current_btn,\
                 self.blank_tab_btn, self.load_from_selected_btn:
@@ -148,13 +169,13 @@ class VEXEditorPanelClass(QMainWindow, editor_window_UIs.Ui_editor_window):
         data = self.settings.get_settings()
         self.theme = data.get('theme', self.theme or vex_settings.default_data['theme'])
         self.toolbar_wd.setVisible(data.get('show_toolbar', True))
-        self.use_help_window = data.get('helpwindow', False)
+        # self.use_help_window = data.get('helpwindow', False)
 
     def save_settings(self, *args):
         data = self.settings.get_settings()
         data['theme'] = self.theme
-        if self.help_wd.isVisible() and not data['helpwindow']:
-            self.help_wd.hide()
+        # if self.help_wd.isVisible() and not data['helpwindow']:
+        #     self.help_wd.hide()
         # save data
         self.settings.save_settings(data)
 
@@ -421,9 +442,9 @@ class VEXEditorPanelClass(QMainWindow, editor_window_UIs.Ui_editor_window):
         def update_from_settings():
             s = self.settings.get_settings()
             self.toolbar_wd.setVisible(s.get('show_toolbar', True))
-            self.use_help_window = s.get('helpwindow', False)
-            if not self.use_help_window:
-                self.help_wd.hide()
+            # self.use_help_window = s.get('helpwindow', False)
+            # if not self.use_help_window:
+            #     self.help_wd.hide()
 
         self.dial.optionsChangedSignal.connect(self.tab.update_from_settings)
         self.dial.optionsChangedSignal.connect(update_from_settings)
@@ -452,10 +473,11 @@ class VEXEditorPanelClass(QMainWindow, editor_window_UIs.Ui_editor_window):
             print os.name
 
     def update_help_window(self, text):
-        if text and self.use_help_window:
+        if text:
             self.help_wd.show_help(text)
         else:
-            self.help_wd.hide()
+            self.help_wd.show_help()
+            # self.help_wd.hide_me()
 
 
     ###########################################################################

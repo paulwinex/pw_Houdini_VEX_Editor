@@ -1,4 +1,4 @@
-# Houdini VEX Editor v1.0.7
+# Houdini VEX Editor v1.0.8
 
 ![alt tag](http://www.paulwinex.ru/wp-content/uploads/2016/03/vex-splash_x.x.x.jpg)
 
@@ -94,6 +94,10 @@ and feature requests can be sent to my email: paulwinex@gmail.com.
 >   "Select node" button now open parent network in active network tab
 
 >   Now help browser open help in same window in Houdini 15
+
+### New in v1.0.7
+
+>   Support Houdini 16
 
 # Interface Description
 ![alt tag](http://www.paulwinex.ru/wp-content/uploads/2015/11/interface.png)

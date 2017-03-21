@@ -1,12 +1,17 @@
-from PySide.QtCore import *
-from PySide.QtGui import *
+try:
+    from PySide.QtCore import *
+    from PySide.QtGui import *
+except:
+    from PySide2.QtCore import *
+    from PySide2.QtGui import *
+    from PySide2.QtWidgets import *
 import os, hou, re
 import input_widget, numbar_widget
 reload(input_widget)
 reload(numbar_widget)
-from .. import houdini_nodes
-reload(houdini_nodes)
-from .. import vex_settings
+
+# reload(houdini_nodes)
+
 
 
 class Container(QWidget):
@@ -22,6 +27,7 @@ class Container(QWidget):
         hbox.setSpacing(0)
         hbox.setContentsMargins(0,0,0,0)
         # text container
+        from .. import vex_settings
         self.settings = vex_settings.EditorSettingsClass()
         self.file, self.parm, self.section = file, parm, section
         self.category = None
@@ -74,6 +80,7 @@ class Container(QWidget):
         text = self.edit.toPlainText()
 
         # update parameters
+        from .. import vex_settings
         if self.settings.get_value('auto_update_parms', vex_settings.default_data['auto_update_parms']):
             if self.parm or self.section:
                 if not self.update_parameters():
@@ -154,6 +161,7 @@ class Container(QWidget):
         self.save_current_declared_parms()
 
     def define_new_source(self):
+        from .. import houdini_nodes
         r = hou.ui.displayMessage('Where you want to save the code?', buttons=('File','Node parameter', 'HDA Section', 'Cancel'),
                                   severity=hou.severityType.ImportantMessage,
                                   default_choice=3,
@@ -193,6 +201,7 @@ class Container(QWidget):
                 node=None
             n = hou.ui.selectNode(initial_node=node)
             if n:
+
                 parms = houdini_nodes.get_parms_from_node(hou.node(n))
                 # names = {x.name(): x for x in parms} # python 2.7
                 names = {}
@@ -288,6 +297,7 @@ class Container(QWidget):
                     if p:
                         grp.remove(p.name())
         # create parms
+        from .. import vex_settings
         top = self.settings.get_value('create_parms_on_top',vex_settings.default_data['create_parms_on_top'])
         for parm in new_parms:
             if not grp.find(parm['name']):

@@ -1,5 +1,10 @@
-from PySide.QtCore import *
-from PySide.QtGui import *
+try:
+    from PySide.QtCore import *
+    from PySide.QtGui import *
+except:
+    from PySide2.QtCore import *
+    from PySide2.QtGui import *
+    from PySide2.QtWidgets import *
 import hou, os
 from .. autocomplete import vex_parser
 from vexSyntax import design
@@ -55,7 +60,7 @@ class CompleterListClass(QListWidget):
             for i, n in enumerate(names):
                 item = QListWidgetItem(self)
                 # h14
-                if hou.applicationVersion()[0] <= 14:
+                if hou.applicationVersion()[0] <= 14 or hou.applicationVersion()[0] >= 16:
                     label = CompleterLabel(n, i%2, self)
                     self.setItemWidget(item, label)
                 else:

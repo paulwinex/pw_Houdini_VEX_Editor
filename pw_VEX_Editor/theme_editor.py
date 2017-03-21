@@ -1,5 +1,10 @@
-from PySide.QtCore import *
-from PySide.QtGui import *
+try:
+    from PySide.QtCore import *
+    from PySide.QtGui import *
+except:
+    from PySide2.QtCore import *
+    from PySide2.QtGui import *
+    from PySide2.QtWidgets import *
 import os, glob, json, re, math
 try:
     import hqt
@@ -205,13 +210,14 @@ class ThemeEditorClass(QDialog, theme_editor_UIs.Ui_Dialog):
         self.theme_gb.setTitle(theme_group_box_text)
 
     def need_to_change_theme(self):
+        import hou
         if '*' in self.theme_gb.title():
-            a = QMessageBox.question(self, 'Unsaved changes', 'Undo changes in the theme "%s"?' % self.theme['name'],
-                                 QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
-            if a == QMessageBox.Yes:
-                return True
+            if hou.applicationVersion()[0] >= 16:
+                a = QMessageBox.question(self, 'Unsaved changes', 'Undo changes in the theme "%s"?' % self.theme['name'])
             else:
-                return False
+                a = QMessageBox.question(self, 'Unsaved changes',
+                                         'Undo changes in the theme "%s"?' % self.theme['name'], QMessageBox.Yes | QMessageBox.No)
+            return a == QMessageBox.Yes
         return True
 
     def save_theme_as(self):
@@ -221,7 +227,7 @@ class ThemeEditorClass(QDialog, theme_editor_UIs.Ui_Dialog):
             name = name[0]
             filename = re.sub('[^A-Za-z0-9]+', '_', name.lower()) + '.json'
             if filename in os.listdir(path):
-                QMessageBox.warning(self, 'File exists', 'Filename allready exists:\n' + filename)
+                QMessageBox.warning(self, 'File exists', 'Filename already exists:\n' + filename)
                 self.save_theme_as()
                 return
             theme = self.theme.copy()
@@ -236,8 +242,13 @@ class ThemeEditorClass(QDialog, theme_editor_UIs.Ui_Dialog):
             self.themesUpdatedSignal.emit()
 
     def remove_theme(self):
-        if QMessageBox.question(hqt.houWindow, 'Remove Theme', 'Remove theme "%s"?' % self.theme['name'],
-                                QMessageBox.Yes | QMessageBox.No, QMessageBox.No) == QMessageBox.Yes:
+        import hou
+        if hou.applicationVersion()[0] >= 16:
+            res = QMessageBox.question(hqt.houWindow, 'Remove Theme', 'Remove theme "%s"?' % self.theme['name']) == QMessageBox.Yes
+        else:
+            res = QMessageBox.question(hqt.houWindow, 'Remove Theme',
+                                       'Remove theme "%s"?' % self.theme['name'], QMessageBox.Yes | QMessageBox.No) == QMessageBox.Yes
+        if res:
             try:
                 os.remove(self.theme['path'])
             except:

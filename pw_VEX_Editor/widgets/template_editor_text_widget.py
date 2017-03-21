@@ -1,10 +1,12 @@
-from PySide.QtCore import *
-from PySide.QtGui import *
-from vexSyntax import design, syntaxHighLighter
 try:
-    from .. import vex_settings
+    from PySide.QtCore import *
+    from PySide.QtGui import *
 except:
-    import vex_settings
+    from PySide2.QtCore import *
+    from PySide2.QtGui import *
+    from PySide2.QtWidgets import *
+from vexSyntax import design, syntaxHighLighter
+
 
 
 class TemplateEditorTextClass(QTextEdit):
@@ -13,6 +15,7 @@ class TemplateEditorTextClass(QTextEdit):
         self.setAcceptRichText(False)
         self.setWordWrapMode(QTextOption.NoWrap)
         self.colors = design.getColors(theme)
+        from .. import vex_settings
         self.s = vex_settings.EditorSettingsClass()
         self.fs = 16
         self.setTheme(self.colors)
@@ -35,6 +38,7 @@ class TemplateEditorTextClass(QTextEdit):
         self.setFontSize()
 
     def setFontSize(self):
+        from .. import vex_settings
         bgcolor = self.colors['code']['background']
         style = self.styleSheet() +'''QTextEdit
     {

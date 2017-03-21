@@ -1,5 +1,10 @@
-from PySide.QtCore import *
-from PySide.QtGui import *
+try:
+    from PySide.QtCore import *
+    from PySide.QtGui import *
+except:
+    from PySide2.QtCore import *
+    from PySide2.QtGui import *
+    from PySide2.QtWidgets import *
 import hqt, hou, os
 import keywords
 
@@ -29,7 +34,8 @@ class WaitingDialogClass(QWidget):
             self.setGeometry(g)
 
     def generate(self):
-        if not os.path.exists(keywords.vex_settings.get_autocomplete_cache_file()):
+        from .. import vex_settings
+        if not os.path.exists(vex_settings.get_autocomplete_cache_file()):
             self.setStyleSheet(hqt.get_h14_style())
             self.show()
         # small pause to update ui
