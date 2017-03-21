@@ -95,7 +95,7 @@ and feature requests can be sent to my email: paulwinex@gmail.com.
 
 >   Now help browser open help in same window in Houdini 15
 
-### New in v1.0.7
+### New in v1.0.8
 
 >   Support Houdini 16
 
