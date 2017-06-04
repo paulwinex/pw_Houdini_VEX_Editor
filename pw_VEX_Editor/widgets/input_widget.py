@@ -674,6 +674,8 @@ class VEXEditorInputWidget(QTextEdit):
         return text
 
     def auto_brackets(self, event):
+        # disable autobtackets
+        return False
         if event.key() == Qt.Key_Backspace:
             # remove
             cursor = self.textCursor()
