@@ -25,7 +25,7 @@ and feature requests can be sent to my email: paulwinex@gmail.com.
   - connect editor with source, quick saving of code by Ctrl+Enter
   - auto creation of parameters, used in code when saving
   - removal of unused and renamed parameters
-  - avto change type parameter when saving
+  - auto change type parameter when saving
   - VEX syntax highlighting
   - quick change of font size (Ctrl + Mouse Scroll)
   - color themes mimicking Houdini themes as well as custom, editor specific themes
