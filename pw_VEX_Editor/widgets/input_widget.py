@@ -565,7 +565,10 @@ class VEXEditorInputWidget(QTextEdit):
             futureCompGeo = self.completer.geometry()
             futureCompGeo.moveTo(pt)
             if not currentScreen.contains(futureCompGeo):
-                i = currentScreen.intersect(futureCompGeo)
+                try:
+                    i = currentScreen.intersect(futureCompGeo)
+                except AttributeError:
+                    i = currentScreen.intersected(futureCompGeo)
                 x = futureCompGeo.width() - i.width()
                 y = futureCompGeo.height()+self.completer.lineHeight if (futureCompGeo.height()-i.height())>0 else 0
 

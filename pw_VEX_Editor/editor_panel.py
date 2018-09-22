@@ -148,7 +148,7 @@ class VEXEditorPanelClass(QMainWindow, editor_window_UIs.Ui_editor_window):
         self.theme_menu()
         # save main widget to main namespace
         main['vexeditor'] = self
-
+        self.setStyleSheet(self.hstyle)
         # start
         self.check_tabs_exists()
         self.update_templates_menu()

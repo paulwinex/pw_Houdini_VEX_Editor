@@ -1,0 +1,11 @@
+QMenuBar {
+    font-size: 12pt;
+}
+
+QMenu::item {
+    font: 12pt;
+}
+
+QMenu:item {
+    min-width: 250px;
+}
